@@ -9,8 +9,6 @@ namespace file_signature {
     {
     public:
         exception_ptr_wrapper( );
-        exception_ptr_wrapper( std::exception_ptr ex );
-
         void set_exception( std::exception_ptr ex );
         void rethrow_exception_if_exists( );
 
