@@ -20,6 +20,7 @@ namespace file_signature {
     class file_chunks_producer_iface
     {
     public:
+        virtual ~file_chunks_producer_iface( ) = default;
         virtual chunk_t chunk( ) = 0;
     };
 
