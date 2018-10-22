@@ -2,7 +2,6 @@
 
 #include "chunk.h"
 
-#include <cstddef>
 #include <memory>
 
 namespace file_signature {
