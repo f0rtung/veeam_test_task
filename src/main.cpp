@@ -1,6 +1,7 @@
 #include "file-reader/binary-file-reader.h"
 #include "file-writer/text-file-writer.h"
 #include "file-chunks-producer/simple-file-chunks-producer.h"
+#include "file-chunks-producer/async-file-chunks-producer.h"
 #include "file-hash-consumer/file-hash-consumer.h"
 #include "file-hash-calculator/file-hash-calculator.h"
 
@@ -59,6 +60,10 @@ int main( int argc, char **argv )
         file_chunks_producer_iface_ptr fc_produser{
             std::make_unique<simple_file_chunks_producer>( std::move( f_reader ), threads_count, chunk_size )
         };
+
+//        file_chunks_producer_iface_ptr fc_produser{
+//            std::make_unique<async_file_chunks_producer>( std::move( f_reader ), chunk_size )
+//        };
 
         file_writer_iface_ptr f_writer{ std::make_unique<text_file_writer>( out_file ) };
         file_hash_consumer_ptr fh_consumer{ std::make_unique<file_hash_consumer>( std::move( f_writer ) ) };

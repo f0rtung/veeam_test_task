@@ -13,6 +13,7 @@ namespace file_signature {
     {
         std::lock_guard<std::mutex> _{ pool_guard_ };
         pool_.push_back( std::move( memory ) );
+        pool_cv_.notify_one( );
     }
 
     bytes chunks_memory_pool::pop( )
@@ -21,6 +22,18 @@ namespace file_signature {
         if ( pool_.empty( ) ) {
             throw empty_chunks_memory_pool_exception{ };
         }
+        return pop_impl( );
+    }
+
+    bytes chunks_memory_pool::wait_pop( )
+    {
+        std::unique_lock<std::mutex> lock{ pool_guard_ };
+        pool_cv_.wait( lock, [this]( ) { return !pool_.empty( ); } );
+        return pop_impl( );
+    }
+
+    bytes chunks_memory_pool::pop_impl( )
+    {
         bytes mem{ std::move( pool_.front( ) ) };
         pool_.pop_front( );
         return mem;
