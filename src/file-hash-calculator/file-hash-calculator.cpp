@@ -21,6 +21,7 @@ namespace file_signature {
 
     void file_hash_calculator::start( )
     {
+        fc_producer_->start( );
         fh_consumer_->start( );
         for ( std::size_t idx = 0; idx < threads_count_; ++idx ) {
             threads_.emplace_back( std::thread( &file_hash_calculator::hash_calculating, this ) );
@@ -34,6 +35,7 @@ namespace file_signature {
                 t.join( );
             }
         }
+        fc_producer_->stop( );
         fh_consumer_->stop( );
     }
 

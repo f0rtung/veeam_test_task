@@ -21,6 +21,8 @@ namespace file_signature {
     public:
         virtual ~file_chunks_producer_iface( ) = default;
         virtual chunk_t chunk( ) = 0;
+        virtual void start( ) = 0;
+        virtual void stop( ) = 0;
     };
 
     using file_chunks_producer_iface_ptr = std::unique_ptr<file_chunks_producer_iface>;

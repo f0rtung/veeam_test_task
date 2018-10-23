@@ -26,4 +26,14 @@ namespace file_signature {
         return chunk;
     }
 
+    void simple_file_chunks_producer::start( )
+    {
+
+    }
+
+    void simple_file_chunks_producer::stop( )
+    {
+
+    }
+
 } // namespace file_signature
