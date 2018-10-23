@@ -5,11 +5,10 @@
 namespace file_signature {
 
     async_file_chunks_producer::async_file_chunks_producer( file_reader_iface_ptr file_reader,
-                                                            std::size_t readers_count,
                                                             std::size_t chunk_size )
         : file_reader_{ std::move( file_reader ) }
         , next_chunk_index_{ 0 }
-        , mem_pool_{ readers_count * 3, chunk_size }
+        , chunk_size_{ chunk_size }
     { }
 
     chunk_t async_file_chunks_producer::chunk( )
@@ -42,13 +41,13 @@ namespace file_signature {
     {
         try{
             while ( !file_reader_->eof( ) ) {
-                bytes buf{ mem_pool_.wait_pop( ) };
+                bytes buf( chunk_size_ );
                 const std::size_t read_bytes{ file_reader_->read( buf.data( ), buf.size( ) ) };
                 if ( read_bytes < buf.size( ) ) { // last chunk
                     buf.resize( read_bytes );
                 }
                 std::lock_guard<std::mutex> _{ chunks_queue_m_ };
-                chunks_queue_.emplace( &mem_pool_, next_chunk_index_++, std::move( buf ) );
+                chunks_queue_.emplace( nullptr, next_chunk_index_++, std::move( buf ) );
             }
             throw no_more_chunks_exception{ };
         } catch ( ... ) {

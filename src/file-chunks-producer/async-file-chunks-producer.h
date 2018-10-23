@@ -16,7 +16,6 @@ namespace file_signature {
     {
     public:
         async_file_chunks_producer( file_reader_iface_ptr file_reader,
-                                     std::size_t readers_count,
                                      std::size_t chunk_size );
 
     public:
@@ -31,7 +30,7 @@ namespace file_signature {
         file_reader_iface_ptr file_reader_;
         std::size_t next_chunk_index_;
         std::mutex reader_guard_;
-        chunks_memory_pool mem_pool_;
+        std::size_t chunk_size_;
         exception_ptr_wrapper reading_exception_;
         std::thread reading_thread_;
 
