@@ -60,9 +60,9 @@ int main( int argc, char **argv )
         const std::size_t chunks_count{ f_reader->size( ) / chunk_size + 1 };
         const std::size_t threads_count = std::min( hc, chunks_count );
 
-        file_chunks_producer_iface_ptr fc_produser{
-            std::make_unique<simple_file_chunks_producer>( std::move( f_reader ), threads_count, chunk_size )
-        };
+//        file_chunks_producer_iface_ptr fc_produser{
+//            std::make_unique<simple_file_chunks_producer>( std::move( f_reader ), chunk_size )
+//        };
 
 //        file_chunks_producer_iface_ptr fc_produser{
 //            std::make_unique<async_file_chunks_producer>( std::move( f_reader ), chunk_size )

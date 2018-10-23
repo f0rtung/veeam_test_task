@@ -2,7 +2,6 @@
 
 #include "file-chunks-producer-iface.h"
 #include "../file-reader/binary-file-reader.h"
-#include "chunks-memory-pool.h"
 #include "../common/exception_ptr_wrapper.h"
 
 #include <mutex>
@@ -29,7 +28,6 @@ namespace file_signature {
     private:
         file_reader_iface_ptr file_reader_;
         std::size_t next_chunk_index_;
-        std::mutex reader_guard_;
         std::size_t chunk_size_;
         exception_ptr_wrapper reading_exception_;
         std::thread reading_thread_;

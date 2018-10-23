@@ -2,18 +2,10 @@
 
 namespace file_signature {
 
-    chunk_t::chunk_t( chunks_memory_pool *memory_pool, std::size_t index, bytes &&memory )
-        : memory_pool_{ memory_pool }
-        , index_{ index }
+    chunk_t::chunk_t( std::size_t index, bytes &&memory )
+        : index_{ index }
         , memory_{ std::move( memory ) }
     { }
-
-    chunk_t::~chunk_t( )
-    {
-        if ( memory_pool_ ) {
-            memory_pool_->push( std::move( memory_ ) );
-        }
-    }
 
     bytes &chunk_t::buf( ) noexcept
     {

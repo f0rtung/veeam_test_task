@@ -56,7 +56,7 @@ TEST_F(file_chunks_producer_test, SimpleProducerTestUnderLoad)
 {
     const std::string content{ random_string( 1024  * 1024 * 100 ) };
     auto file_reader_ptr = std::make_unique<file_reader_stub>( content );
-    simple_file_chunks_producer chunk_producer{ std::move( file_reader_ptr ), threads_, chunk_size_ };
+    simple_file_chunks_producer chunk_producer{ std::move( file_reader_ptr ), chunk_size_ };
 
     std::unique_lock<std::mutex> lock{ run_guard_ };
     std::vector<std::thread> threads;

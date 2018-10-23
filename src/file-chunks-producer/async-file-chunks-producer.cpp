@@ -47,7 +47,7 @@ namespace file_signature {
                     buf.resize( read_bytes );
                 }
                 std::lock_guard<std::mutex> _{ chunks_queue_m_ };
-                chunks_queue_.emplace( nullptr, next_chunk_index_++, std::move( buf ) );
+                chunks_queue_.emplace( next_chunk_index_++, std::move( buf ) );
             }
             throw no_more_chunks_exception{ };
         } catch ( ... ) {
