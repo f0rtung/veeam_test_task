@@ -3,6 +3,7 @@
 #include "file-chunks-producer/simple-file-chunks-producer.h"
 #include "file-chunks-producer/async-file-chunks-producer.h"
 #include "file-hash-consumer/file-hash-consumer.h"
+#include "file-hash-consumer/one-write-file-hash-consumer.h"
 #include "file-hash-calculator/file-hash-calculator.h"
 
 #include <algorithm>
@@ -56,7 +57,9 @@ int main( int argc, char **argv )
         using namespace file_signature;
 
         file_reader_iface_ptr f_reader{ std::make_unique<binary_file_reader>( input_file ) };
-        const std::size_t threads_count = std::min( hc, f_reader->size( ) / chunk_size + 1 );
+        const std::size_t chunks_count{ f_reader->size( ) / chunk_size + 1 };
+        const std::size_t threads_count = std::min( hc, chunks_count );
+
         file_chunks_producer_iface_ptr fc_produser{
             std::make_unique<simple_file_chunks_producer>( std::move( f_reader ), threads_count, chunk_size )
         };
@@ -66,7 +69,10 @@ int main( int argc, char **argv )
 //        };
 
         file_writer_iface_ptr f_writer{ std::make_unique<text_file_writer>( out_file ) };
-        file_hash_consumer_iface_ptr fh_consumer{ std::make_unique<file_hash_consumer>( std::move( f_writer ) ) };
+
+//        file_hash_consumer_iface_ptr fh_consumer{ std::make_unique<file_hash_consumer>( std::move( f_writer ) ) };
+
+        file_hash_consumer_iface_ptr fh_consumer{ std::make_unique<one_write_file_hash_consumer>( std::move( f_writer ), chunks_count ) };
 
         file_hash_calculator fh_calculator{ std::move( fc_produser ), std::move( fh_consumer ), threads_count };
         fh_calculator.calculate( );

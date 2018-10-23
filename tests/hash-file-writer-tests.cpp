@@ -1,4 +1,5 @@
 #include "../src/file-hash-consumer/file-hash-consumer.h"
+#include "../src/file-hash-consumer/one-write-file-hash-consumer.h"
 #include "stubs/file-writer-stub.h"
 
 #include <chrono>
@@ -21,7 +22,7 @@ public:
         return sample;
     }
 
-    void add_hashes( file_hash_consumer &writer, std::size_t start_pos, std::size_t step, std::atomic_size_t &threads_count )
+    void add_hashes( file_hash_consumer_iface &writer, std::size_t start_pos, std::size_t step, std::atomic_size_t &threads_count )
     {
         ++threads_count;
         run_cv_.notify_one( );
@@ -39,7 +40,7 @@ public:
     const std::size_t threads_{ 7 }; // should be less than 10 for test
 };
 
-TEST_F(hash_file_writer_test, TestUnderLoad)
+TEST_F(hash_file_writer_test, TestAsyncWriterUnderLoad)
 {
     auto file_writer_ptr = std::make_unique<file_writer_stub>( true );
     auto *raw_file_writer_ptr = static_cast<file_writer_stub *>( file_writer_ptr.get( ) );
@@ -78,4 +79,29 @@ TEST_F(hash_file_writer_test, TestCatchExceptionOnWriteOrStop)
         ASSERT_THAT( ex.what( ), ::testing::StartsWith( "Can not write" ) );
     }
     hash_writer.stop( );
+}
+
+TEST_F(hash_file_writer_test, TestOneWriteWriterUnderLoad)
+{
+    auto file_writer_ptr = std::make_unique<file_writer_stub>( true );
+    auto *raw_file_writer_ptr = static_cast<file_writer_stub *>( file_writer_ptr.get( ) );
+    one_write_file_hash_consumer hash_writer( std::move( file_writer_ptr ), max_hashes_count_ );
+    hash_writer.start( );
+    std::unique_lock<std::mutex> lock{ run_guard_ };
+    std::vector<std::thread> threads;
+    std::atomic_size_t threads_count{ 0 };
+    for ( std::size_t idx = 0; idx < threads_; ++idx ) {
+        threads.emplace_back( std::thread( &hash_file_writer_test::add_hashes, this,
+                                           std::ref( hash_writer ), idx, threads_, std::ref( threads_count ) ) );
+    }
+    run_cv_.wait( lock, [&threads_count, this] { return threads_ == threads_count; } );
+    lock.unlock( );
+
+    for ( auto &t : threads ) {
+        t.join( );
+    }
+
+    hash_writer.stop( );
+
+    ASSERT_EQ( make_sample( ), raw_file_writer_ptr->content( ) );
 }
