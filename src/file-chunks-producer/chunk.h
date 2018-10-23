@@ -9,10 +9,10 @@ namespace file_signature {
     public:
         chunk_t( ) = default;
         chunk_t( std::size_t index, bytes &&memory );
-        chunk_t( chunk_t& ) = delete;
-        chunk_t& operator=( chunk_t& ) = delete;
-        chunk_t( chunk_t&& ) = default;
-        chunk_t& operator=( chunk_t&& ) = default;
+        chunk_t( chunk_t & ) = delete;
+        chunk_t &operator=( chunk_t & ) = delete;
+        chunk_t( chunk_t && ) = default;
+        chunk_t &operator=( chunk_t && ) = default;
         bytes &buf( ) noexcept;
         std::size_t index( ) const noexcept;
 
