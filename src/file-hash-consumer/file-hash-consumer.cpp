@@ -45,7 +45,7 @@ namespace file_signature {
             }
             move_from_hashes_buffer( );
             write_hashes( hashes_.cbegin( ), hashes_.cend( ) );
-        } catch ( const std::exception &/* ex */ ) {
+        } catch ( ... ) {
             processing_exception_.set_exception( std::current_exception( ) );
         }
 
