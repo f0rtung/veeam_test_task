@@ -24,7 +24,7 @@ namespace file_signature {
         fc_producer_->start( );
         fh_consumer_->start( );
         for ( std::size_t idx = 0; idx < threads_count_; ++idx ) {
-            threads_.emplace_back( std::thread( &file_hash_calculator::hash_calculating, this ) );
+            threads_.emplace_back( &file_hash_calculator::hash_calculating, this );
         }
     }
 
