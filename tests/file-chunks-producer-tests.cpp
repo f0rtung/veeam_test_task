@@ -1,5 +1,6 @@
 #include "../src/file-chunks-producer/simple-file-chunks-producer.h"
 #include "../src/file-chunks-producer/async-file-chunks-producer.h"
+#include "../src/file-chunks-producer/dumb-lock-free-file-chunks-producer.h"
 #include "stubs/file-reader-stub.h"
 #include "utils/utils.h"
 
@@ -80,6 +81,36 @@ TEST_F(file_chunks_producer_test, AsyncProducerTestUnderLoad)
     const std::string content{ random_string( 1024  * 1024 * 100 ) };
     auto file_reader_ptr = std::make_unique<file_reader_stub>( content );
     async_file_chunks_producer chunk_producer{ std::move( file_reader_ptr ), chunk_size_ };
+
+    std::unique_lock<std::mutex> lock{ run_guard_ };
+    std::vector<std::thread> threads;
+    std::atomic_size_t threads_count{ 0 };
+    for ( std::size_t idx = 0; idx < threads_; ++idx ) {
+        threads.emplace_back( std::thread( &file_chunks_producer_test::read_chunk, this,
+                                           std::ref( chunk_producer ), std::ref( threads_count ) ) );
+    }
+    run_cv_.wait( lock, [&threads_count, this] { return threads_ == threads_count; } );
+
+    chunk_producer.start( );
+
+    lock.unlock( );
+
+    for ( auto &t : threads ) {
+        t.join( );
+    }
+
+    chunk_producer.stop( );
+
+    ASSERT_EQ( content, make_source_file_content( ) );
+}
+
+TEST_F(file_chunks_producer_test, DumbProducerTestUnderLoad)
+{
+    const std::string content{ random_string( 1024  * 1024 * 100 ) };
+    auto file_reader_ptr = std::make_unique<file_reader_stub>( content );
+    dump_lock_free_file_chunks_producer chunk_producer{
+        std::move( file_reader_ptr ), content.size( ) / chunk_size_ + 1, chunk_size_
+    };
 
     std::unique_lock<std::mutex> lock{ run_guard_ };
     std::vector<std::thread> threads;
