@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../file-chunks-producer/file-chunks-producer-iface.h"
-#include "../file-hash-consumer/file-hash-consumer.h"
+#include "../file-hash-consumer/file-hash-consumer-iface.h"
 
 #include <memory>
 #include <thread>
@@ -13,7 +13,7 @@ namespace file_signature {
     {
     public:
         file_hash_calculator( file_chunks_producer_iface_ptr fc_producer,
-                              file_hash_consumer_ptr fh_consumer,
+                              file_hash_consumer_iface_ptr fh_consumer,
                               std::size_t threads_count );
         void calculate( );
 
@@ -24,7 +24,7 @@ namespace file_signature {
 
     private:
         file_chunks_producer_iface_ptr fc_producer_;
-        file_hash_consumer_ptr fh_consumer_;
+        file_hash_consumer_iface_ptr fh_consumer_;
         std::size_t threads_count_;
         std::vector<std::thread> threads_;
     };

@@ -6,7 +6,7 @@
 namespace file_signature {
 
     file_hash_calculator::file_hash_calculator( file_chunks_producer_iface_ptr fc_producer,
-                                                file_hash_consumer_ptr fh_consumer,
+                                                file_hash_consumer_iface_ptr fh_consumer,
                                                 std::size_t threads_count )
         : fc_producer_{ std::move( fc_producer ) }
         , fh_consumer_{ std::move( fh_consumer ) }

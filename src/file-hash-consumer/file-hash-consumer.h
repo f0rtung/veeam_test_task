@@ -1,7 +1,7 @@
 #pragma once
 
-#include "hash.h"
-#include "../file-writer/text-file-writer.h"
+#include "file-hash-consumer-iface.h"
+#include "../file-writer/file-writer-iface.h"
 #include "../common/exception_ptr_wrapper.h"
 
 #include <atomic>
@@ -18,15 +18,16 @@ namespace file_signature {
     namespace ch = std::chrono;
 
     class file_hash_consumer
+        : public file_hash_consumer_iface
     {
         using hashes_map_t = std::map<std::size_t, std::string>;
         using hashes_map_cit_t = hashes_map_t::const_iterator;
 
     public:
         file_hash_consumer( file_writer_iface_ptr file_writer, ch::microseconds write_interval = ch::microseconds( 100 ) );
-        void start( );
-        void stop( );
-        void add_hash( hash_t &&hash );
+        void start( ) override;
+        void stop( ) override;
+        void add_hash( hash_t &&hash ) override;
 
     private:
         void hash_processing( );

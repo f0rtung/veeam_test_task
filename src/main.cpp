@@ -66,7 +66,7 @@ int main( int argc, char **argv )
 //        };
 
         file_writer_iface_ptr f_writer{ std::make_unique<text_file_writer>( out_file ) };
-        file_hash_consumer_ptr fh_consumer{ std::make_unique<file_hash_consumer>( std::move( f_writer ) ) };
+        file_hash_consumer_iface_ptr fh_consumer{ std::make_unique<file_hash_consumer>( std::move( f_writer ) ) };
 
         file_hash_calculator fh_calculator{ std::move( fc_produser ), std::move( fh_consumer ), threads_count };
         fh_calculator.calculate( );
