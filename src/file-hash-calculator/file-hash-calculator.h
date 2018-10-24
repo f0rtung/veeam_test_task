@@ -3,7 +3,6 @@
 #include "../file-chunks-producer/file-chunks-producer-iface.h"
 #include "../file-hash-consumer/file-hash-consumer-iface.h"
 
-#include <memory>
 #include <thread>
 #include <vector>
 
