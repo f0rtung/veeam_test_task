@@ -31,8 +31,7 @@ namespace file_signature {
         std::size_t chunk_size_;
         exception_ptr_wrapper reading_exception_;
         std::thread reading_thread_;
-
-        std::mutex chunks_queue_m_;
+        std::mutex chunks_queue_guard_;
         std::queue<chunk_t> chunks_queue_;
     };
 
