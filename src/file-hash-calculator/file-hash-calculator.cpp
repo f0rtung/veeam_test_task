@@ -47,7 +47,7 @@ namespace file_signature {
                 hash_t hash{ crc_32( chunk.buf( ) ), chunk.index( ) };
                 fh_consumer_->add_hash( std::move( hash ) );
             }
-        } catch ( std::exception &ex ) {
+        } catch ( const std::exception &ex ) {
             std::cout << ex.what( ) << std::endl;
         }
     }
