@@ -13,7 +13,7 @@ namespace file_signature {
 
     chunk_t async_file_chunks_producer::chunk( )
     {
-        std::unique_lock<std::mutex> lock{ chunks_queue_m_ };
+        std::unique_lock<std::mutex> lock{ chunks_queue_guard_ };
         while( chunks_queue_.empty( ) ) {
             reading_exception_.rethrow_exception_if_exists( );
             lock.unlock( );
@@ -46,7 +46,7 @@ namespace file_signature {
                 if ( read_bytes < buf.size( ) ) { // last chunk
                     buf.resize( read_bytes );
                 }
-                std::lock_guard<std::mutex> _{ chunks_queue_m_ };
+                std::lock_guard<std::mutex> _{ chunks_queue_guard_ };
                 chunks_queue_.emplace( next_chunk_index_++, std::move( buf ) );
             }
             throw no_more_chunks_exception{ };
